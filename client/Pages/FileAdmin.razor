@@ -2,7 +2,59 @@
 
 <h1>File Administrator</h1>
 
+@if(BlazorFiles ==null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>File Name</th>
+                <th>Date Created</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in BlazorFiles)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Description</td>
+                    <td>@item.FileName</td>
+                    <td>@item.DateCreated</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
 @code
 {
+    public List<BlazorFile> BlazorFiles {get;set;}
+
+    protected override async Task OnInitializedAsync()
+    {
+        BlazorFiles = new List<BlazorFile>();
+        BlazorFiles.Add(new BlazorFile() 
+        { 
+            Name = "File 1",
+            Description = "This is the file 1",
+            DateCreated = DateTime.Now,
+            FileName = "FileName.txt"
+        });    
+
+        BlazorFiles.Add(new BlazorFile() 
+        { 
+            Name = "File 2",
+            Description = "This is the file 2",
+            DateCreated = DateTime.Now,
+            FileName = "FileName2.log"
+        });    
+
+        
+    }
     
 }
