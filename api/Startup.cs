@@ -36,6 +36,11 @@ namespace api
          
             services.AddDbContext<BlazorFileContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddCors(p=> 
+            p.AddPolicy("Cors", c=> 
+            c.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()
+            ));
             
             //services.AddDbContext<BlazorFileContext>(options =>
             //    options.UseInMemoryDatabase("DBContext"));
@@ -55,6 +60,8 @@ namespace api
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors("Cors");
 
             app.UseAuthorization();
 

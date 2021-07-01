@@ -18,7 +18,8 @@ namespace client
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
 
-            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+            var apiUrl = builder.Configuration.GetValue<string>("apiUrl");
+            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(apiUrl) });
             
             builder.Services.AddBlazoredModal();
 

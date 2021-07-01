@@ -1,5 +1,7 @@
 @page "/fileadmin" 
 @inject NavigationManager nav
+@inject HttpClient api
+@inject IJSRuntime js
 
 <h1>File Administrator</h1>
 
@@ -20,6 +22,7 @@ else
                 <th>Description</th>
                 <th>File Name</th>
                 <th>Date Created</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -30,6 +33,10 @@ else
                     <td>@item.Description</td>
                     <td>@item.FileName</td>
                     <td>@item.DateCreated</td>
+                    <td>
+                        <button class="btn" @onclick="()=> UpdateFile(item)">Update</button>
+                        <button class="btn btn-danger" @onclick="()=> DeleteFile(item.BlazorFileId)">Delete</button>
+                    </td>
                 </tr>
             }
         </tbody>
@@ -44,27 +51,37 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        BlazorFiles = new List<BlazorFile>();
-        BlazorFiles.Add(new BlazorFile() 
-        { 
-            Name = "File 1",
-            Description = "This is the file 1",
-            DateCreated = DateTime.Now,
-            FileName = "FileName.txt"
-        });    
-
-        BlazorFiles.Add(new BlazorFile() 
-        { 
-            Name = "File 2",
-            Description = "This is the file 2",
-            DateCreated = DateTime.Now,
-            FileName = "FileName2.log"
-        });    
+       await GetBlazorFiles();
     }
 
-    public void GotToAddFileAdmin()
+    public async Task GotToAddFileAdmin()
     {
-        Modal.Show<AddFileAdmin>("Add New File");
+        var reference = Modal.Show<AddFileAdmin>("Add New File");
+
+        var resultModal = await reference.Result;
+        
+        if(!resultModal.Cancelled) await GetBlazorFiles();
     }
-    
+
+    public async Task GetBlazorFiles()
+    {
+         BlazorFiles = await api.GetFromJsonAsync<List<BlazorFile>>("BlazorFile");
+    }    
+
+    public async Task UpdateFile(BlazorFile fileSelected)
+    {
+        ModalParameters parameters = new ModalParameters();
+
+        parameters.Add("EditMode", true);
+        parameters.Add("currentModel", fileSelected);
+        
+        var reference = Modal.Show<AddFileAdmin>("Edit File", parameters);
+
+        var resultModal = await reference.Result;
+    }
+
+    public async Task DeleteFile(Guid id)
+    {
+        var result = await js.InvokeAsync<bool>("deleteConfirm");
+    }
 }

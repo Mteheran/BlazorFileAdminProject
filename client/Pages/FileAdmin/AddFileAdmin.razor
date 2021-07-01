@@ -1,3 +1,6 @@
+@using System.Text
+@inject HttpClient api
+
 <div class="panel">
 <EditForm class="form" Model="model" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
@@ -24,10 +27,14 @@
     <div class="form-group">
         <label for="@nameof(model.BlazorFileTypeId)">File Type</label>
        <InputSelect class="form-control" @bind-Value="model.BlazorFileTypeId">
-        @foreach (var item in FileTypes)
-        {
-            <option value="@item.BlazorFileTypeId">@item.Name</option>            
-        }
+       
+       @if(FileTypes != null)
+       {
+            @foreach (var item in FileTypes)
+            {
+                <option value="@item.BlazorFileTypeId">@item.Name</option>            
+            }
+       }
        </InputSelect>
     </div>
 
@@ -43,34 +50,47 @@
 {
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     public BlazorFile model  {get;set;}
-
     public List<BlazorFileType> FileTypes {get;set;}
 
+    [Parameter]
+    public bool EditMode { get; set; }
+
+    [Parameter]
+    public BlazorFile currentModel { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if(currentModel!= null) model = currentModel;        
+    }
     protected override async Task OnInitializedAsync()
     {
-        model = new BlazorFile();
-        FileTypes = new List<BlazorFileType>();
-        FileTypes.Add(new BlazorFileType()
-        {
-            Name = "File Type 1",
-            Description = "File Type 1"
-        });
+        if(model== null) model = new BlazorFile();      
 
-        FileTypes.Add(new BlazorFileType()
-        {
-            Name = "File Type 2",
-            Description = "File Type 2"
-        });
+        FileTypes = await api.GetFromJsonAsync<List<BlazorFileType>>("BlazorFileType");
+        
+        if(!EditMode) model.BlazorFileTypeId = FileTypes[0].BlazorFileTypeId;
     }
 
-    public void HandleValidSubmit()
+    public async Task HandleValidSubmit()
     {
-
+        var jsonData = System.Text.Json.JsonSerializer.Serialize(model);
+        StringContent sb = new StringContent(jsonData, Encoding.UTF8, "application/json");
+        
+        if(EditMode)
+        {
+             await api.PutAsync($"BlazorFile/{model.BlazorFileId}", sb);
+        }
+        else
+        {
+            await api.PostAsync("BlazorFile", sb);
+        }
+     
+        await ModalInstance.CloseAsync();
     }
 
     public async Task CloseModal()
     {
-        await ModalInstance.CloseAsync();
+        await ModalInstance.CancelAsync();
     }
 
 }
