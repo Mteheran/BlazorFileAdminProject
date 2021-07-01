@@ -34,11 +34,11 @@ namespace api
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "api", Version = "v1" });
             });
          
-            //services.AddDbContext<BlazorFileContext>(options =>
-            //    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            
             services.AddDbContext<BlazorFileContext>(options =>
-                options.UseInMemoryDatabase("DBContext"));
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            
+            //services.AddDbContext<BlazorFileContext>(options =>
+            //    options.UseInMemoryDatabase("DBContext"));
             
         }
 
