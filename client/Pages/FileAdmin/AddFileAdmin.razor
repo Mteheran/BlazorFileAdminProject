@@ -1,0 +1,76 @@
+<div class="panel">
+<EditForm class="form" Model="model" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="@nameof(model.Name)">@nameof(model.Name)</label>
+        <InputText class="form-control" id="@nameof(model.Name)" @bind-Value="model.Name" />
+        <ValidationMessage For="@(() => model.Name)" />
+    </div>
+    
+    <div class="form-group">
+        <label for="@nameof(model.Description)">@nameof(model.Description)</label>
+        <InputText class="form-control" id="@nameof(model.Description)" @bind-Value="model.Description" />
+        <ValidationMessage For="@(() => model.Description)" />
+    </div>
+
+    <div class="form-group">
+        <label for="@nameof(model.FileName)">@nameof(model.FileName)</label>
+        <InputText class="form-control" id="@nameof(model.FileName)" @bind-Value="model.FileName" />
+        <ValidationMessage For="@(() => model.FileName)" />
+    </div>
+
+    <div class="form-group">
+        <label for="@nameof(model.BlazorFileTypeId)">File Type</label>
+       <InputSelect class="form-control" @bind-Value="model.BlazorFileTypeId">
+        @foreach (var item in FileTypes)
+        {
+            <option value="@item.BlazorFileTypeId">@item.Name</option>            
+        }
+       </InputSelect>
+    </div>
+
+    
+    
+    <button class="btn btn-success" type="submit">Save</button>
+    <button class="btn btn-danger" @onclick="CloseModal">Close</button>
+</EditForm>
+
+</div>
+
+@code
+{
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    public BlazorFile model  {get;set;}
+
+    public List<BlazorFileType> FileTypes {get;set;}
+
+    protected override async Task OnInitializedAsync()
+    {
+        model = new BlazorFile();
+        FileTypes = new List<BlazorFileType>();
+        FileTypes.Add(new BlazorFileType()
+        {
+            Name = "File Type 1",
+            Description = "File Type 1"
+        });
+
+        FileTypes.Add(new BlazorFileType()
+        {
+            Name = "File Type 2",
+            Description = "File Type 2"
+        });
+    }
+
+    public void HandleValidSubmit()
+    {
+
+    }
+
+    public async Task CloseModal()
+    {
+        await ModalInstance.CloseAsync();
+    }
+
+}

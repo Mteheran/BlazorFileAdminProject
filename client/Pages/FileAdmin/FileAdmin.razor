@@ -1,6 +1,11 @@
 @page "/fileadmin" 
+@inject NavigationManager nav
 
 <h1>File Administrator</h1>
+
+<div class="form-group">
+<button class="btn btn-primary" @onclick="GotToAddFileAdmin">Add New File</button>
+</div>
 
 @if(BlazorFiles ==null)
 {
@@ -33,6 +38,8 @@ else
 
 @code
 {
+    [CascadingParameter] public IModalService Modal { get; set; }
+
     public List<BlazorFile> BlazorFiles {get;set;}
 
     protected override async Task OnInitializedAsync()
@@ -53,8 +60,11 @@ else
             DateCreated = DateTime.Now,
             FileName = "FileName2.log"
         });    
+    }
 
-        
+    public void GotToAddFileAdmin()
+    {
+        Modal.Show<AddFileAdmin>("Add New File");
     }
     
 }
