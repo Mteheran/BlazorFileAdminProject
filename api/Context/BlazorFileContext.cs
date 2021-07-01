@@ -46,10 +46,11 @@ namespace api.Context
 
             builder.Entity<BlazorFileType>(p=>
             { 
-                p.ToTable("FileType");
+                p.ToTable("FileType").HasData(blazorFileTypes);
                 p.HasKey(p=> p.BlazorFileTypeId);
                 p.Property(p=> p.Name).IsRequired();
                 p.Property(p=> p.Name).HasMaxLength(250);
+            
             });
 
             base.OnModelCreating(builder);
