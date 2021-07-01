@@ -11,7 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-
+using Microsoft.EntityFrameworkCore;
+using api.Context;
 namespace api
 {
     public class Startup
@@ -32,6 +33,13 @@ namespace api
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "api", Version = "v1" });
             });
+         
+            //services.AddDbContext<BlazorFileContext>(options =>
+            //    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            
+            services.AddDbContext<BlazorFileContext>(options =>
+                options.UseInMemoryDatabase("DBContext"));
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

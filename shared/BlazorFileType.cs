@@ -10,5 +10,7 @@ namespace shared
         public Guid BlazorFileTypeId { get;set;}
         public string Name {get;set;}
         public string Description {get;set;}
+
+        public virtual ICollection<BlazorFile> BlazorFiles {get;set;}
     }
 }
