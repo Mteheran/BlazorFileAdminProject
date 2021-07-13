@@ -20,7 +20,8 @@
 
     <div class="form-group">
         <label for="@nameof(model.FileName)">@nameof(model.FileName)</label>
-        <InputText class="form-control" id="@nameof(model.FileName)" @bind-Value="model.FileName" />
+        <InputFile class="form-control" id="@nameof(model.FileName)" OnChange="@OnInputFileChange"  />
+        <span>@model.FileName</span>
         <ValidationMessage For="@(() => model.FileName)" />
     </div>
 
@@ -58,6 +59,8 @@
     [Parameter]
     public BlazorFile currentModel { get; set; }
 
+    public IBrowserFile FileSelected {get;set;}
+
     protected override async Task OnParametersSetAsync()
     {
         if(currentModel!= null) model = currentModel;        
@@ -86,6 +89,13 @@
         }
      
         await ModalInstance.CloseAsync();
+    }
+
+    public async Task OnInputFileChange(InputFileChangeEventArgs e)
+    {
+        FileSelected = e.File;
+        currentModel.FileName = FileSelected.Name;
+
     }
 
     public async Task CloseModal()
