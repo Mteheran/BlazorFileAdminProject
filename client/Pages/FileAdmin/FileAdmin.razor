@@ -83,5 +83,11 @@ else
     public async Task DeleteFile(Guid id)
     {
         var result = await js.InvokeAsync<bool>("deleteConfirm");
+
+        if(result)
+        {
+            await api.DeleteAsync($"BlazorFile/{id.ToString()}");
+            await GetBlazorFiles();
+        }
     }
 }
