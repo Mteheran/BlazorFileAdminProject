@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Context;
+using api.Services;
 using Microsoft.AspNetCore.Mvc;
 using shared;
 
@@ -13,9 +14,11 @@ namespace api.Controllers
     public class BlazorFileController : ControllerBase
     {
         BlazorFileContext context;
-        public BlazorFileController(BlazorFileContext fileContext)
+        IAzureStorageService azureStorageService;
+        public BlazorFileController(BlazorFileContext fileContext, IAzureStorageService azureStorageService)
         {
             context = fileContext;
+            this.azureStorageService = azureStorageService;
         }
 
         [HttpGet("")]
@@ -31,19 +34,28 @@ namespace api.Controllers
         }
 
         [HttpPost("")]
-        public ActionResult<BlazorFile> PostBlazorFile(BlazorFile model)
+        public async Task<ActionResult<BlazorFile>> PostBlazorFile(BlazorFileModel model)
         {
-            context.BlazorFiles.Add(model);
-            context.SaveChanges();
+            FileData fileData = new FileData();
+            fileData.FileInfo = model.FileData;
+            fileData.FileName = model.FileInfo.FileName;
+            await azureStorageService.SaveFileAsync(fileData);
 
-            return model;
+            context.BlazorFiles.Add(model.FileInfo);
+            await context.SaveChangesAsync();
+
+            return model.FileInfo;
         }
 
         [HttpPut("{id}")]
-        public IActionResult PutBlazorFile(int id, BlazorFile model)
+        public async Task<IActionResult> PutBlazorFile(string id, BlazorFileModel model)
         {
-           context.Update(model);
-           context.SaveChanges();
+           FileData fileData = new FileData();
+           fileData.FileInfo = model.FileData;
+           fileData.FileName = model.FileInfo.FileName;
+           await azureStorageService.SaveFileAsync(fileData);
+           context.Update(model.FileInfo);
+           await context.SaveChangesAsync();
 
            return Ok();
         }

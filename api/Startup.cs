@@ -13,6 +13,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using api.Context;
+using api.Services;
+
 namespace api
 {
     public class Startup
@@ -41,6 +43,8 @@ namespace api
             p.AddPolicy("Cors", c=> 
             c.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()
             ));
+
+            services.AddScoped<IAzureStorageService, AzureStorageService>();
             
             //services.AddDbContext<BlazorFileContext>(options =>
             //    options.UseInMemoryDatabase("DBContext"));

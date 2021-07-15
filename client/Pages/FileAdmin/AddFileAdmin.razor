@@ -76,7 +76,19 @@
 
     public async Task HandleValidSubmit()
     {
-        var jsonData = System.Text.Json.JsonSerializer.Serialize(model);
+        
+        BlazorFileModel fileModel = new BlazorFileModel();
+
+        var stream  = FileSelected.OpenReadStream(100000000);
+        MemoryStream ms = new MemoryStream();
+        await stream.CopyToAsync(ms);
+        stream.Close();
+        
+        model.FileName = FileSelected.Name;
+        fileModel.FileInfo = model;
+        fileModel.FileData = ms.ToArray();
+
+        var jsonData = System.Text.Json.JsonSerializer.Serialize(fileModel);
         StringContent sb = new StringContent(jsonData, Encoding.UTF8, "application/json");
         
         if(EditMode)
